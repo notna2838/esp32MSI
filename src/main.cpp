@@ -18,6 +18,8 @@
 //#include <AsyncTCP.h>
 //#include <Hash.h>
 //#include <ESPAsyncWebServer.h>
+#include <Adafruit_Sensor.h>     // Basis-Bilbiothek für die Adafruit Sensor Biblitheken (Bibliothek von Adafruit)
+#include <Adafruit_TSL2561_U.h>  // Bibliothek für den Lichtsensor TSL2661 (Bibliothek von Adafruit)
 
 #include <ESP8266TrueRandom.h> 
 
@@ -47,6 +49,12 @@
 #define MESSAGEURI  "{{MessageUri}}"
 #define LINKS       "{{Links}}"
 #define DEVICEINFO  "{{DeviceInfo}}"
+
+
+
+int ledPin[]              = {13, 12, 14};   // grüne LED an GPIO Pin 13/D7, rote LED an GPIO Pin 12/D6, blaue LED an GPIO Pin 14/D5 (hier für Lucky Light: LL-509RGBC2E-006)
+#define sdaPin          = 21;              // SDA an GPIO/Pin  4 / D2   Anschluss-Pin für das SDA-Signal zur Datenkommunikation mit dem Lichtsensor
+#define sclPin          = 22;              // SCL an GPIO/Pin  5 / D1   Anschluss-Pin für das SCL-Signal zur Datenkommunikation mit dem Lichtsensor
 
 #define ADDRESS_LCD1   0x3F
 #define ADDRESS_LCD2   0x27
@@ -116,6 +124,7 @@ bool pHExists  = false;
 bool Lcd1Exists = false;
 bool Lcd2Exists = false;
 bool OledExists  = false;
+bool TSL2561Exists  = false;
 
 enum eTypeOfDevice {eUnknown, 
                     eRoomLabel,
@@ -383,6 +392,7 @@ void getDeviceInfo(String& deviceInfo)
   addTableRow(deviceInfo, "BME280",           bmeExists ? "yes":"no");
   addTableRow(deviceInfo, "DHT22",            dhtExists ? "yes":"no");
   addTableRow(deviceInfo, "ph Sensor",        pHExists  ? "yes":"no");
+  addTableRow(deviceInfo, "TSL2561 Sensor",   TSL2561Exists  ? "yes":"no");//ALe add Photometer
   addTableRow(deviceInfo, "LCD 1 (0x3F)",     Lcd1Exists ? "yes":"no");
   addTableRow(deviceInfo, "LCD 2 (0x27)",     Lcd2Exists ? "yes":"no");
   addTableRow(deviceInfo, "OLED",             OledExists  ? "yes":"no");
@@ -1656,7 +1666,19 @@ void pHStart()
 
 }
 
+void ePhotostart() // work in progress, no idea how the driver works
+{
+  adc1_config_width(ADC_WIDTH_12Bit);
+  adc1_config_channel_atten(ADC1_CHANNEL_0,ADC_ATTEN_11db); 
+  
+  if (adc1_get_raw(ADC1_CHANNEL_0)!=0)
+  {
+    TSL2561Exists = true;
+    Serial.println("Found Photometer");
+  }
+  photoMeter.initialize();
 
+}
 
 unsigned long startMillis;
 void setup() 

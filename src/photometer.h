@@ -16,7 +16,7 @@ const char PROGMEM  PM_MDGetValue[] ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                                     "<messageId>GetValue</messageId>"
                                     "<supplierId>Werum</supplierId>"
                                     "<deviceTypeId>ESP_photo_meter</deviceTypeId>"
-                                    "<description>Get current pH Reading</description>"
+                                    "<description>Get current AU Reading</description>"
                                     "<supplierVersion>1.0</supplierVersion>"
                                     "<systemId>"
                                     OP_MESSAGEID
@@ -32,7 +32,7 @@ const char PROGMEM  PM_MDGetValue[] ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                                     "</parameter>"
                                     "<parameter>"
                                         "<name>pH</name>"
-                                        "<description>Current pH value</description>"
+                                        "<description>Current AU value</description>"
                                         "<dataType>Double</dataType>"
                                         "<direction>TO_MES</direction>"
                                         "<isMesQualifier>false</isMesQualifier>"
@@ -41,7 +41,7 @@ const char PROGMEM  PM_MDGetValue[] ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                                           "<fromValue>0</fromValue>"
                                           "<toValue>14</toValue>"
                                         "</definitionRange>"
-                                        "<uom>pH</uom>"
+                                        "<uom>AU</uom>"
                                     "</parameter>"
                                     "<attachment>"
                                     "</attachment>"
@@ -116,7 +116,7 @@ class PhotoMeter:public OrderParameterMessage
       PhotoMeter()
       :OrderParameterMessage()
       {
-        myDeviceTypeId ="ESP_pH_meter";
+        myDeviceTypeId ="ESP_pHotometer";
         //struct PHCalibrationValue pHCalibrationValue;
         //pHSensor.initialize(pHCalibrationValue);
       }
