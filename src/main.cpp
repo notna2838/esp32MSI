@@ -50,6 +50,8 @@
 #define LINKS       "{{Links}}"
 #define DEVICEINFO  "{{DeviceInfo}}"
 
+#define USE_LittleFS
+ 
 
 
 int ledPin[]              = {13, 12, 14};   // grüne LED an GPIO Pin 13/D7, rote LED an GPIO Pin 12/D6, blaue LED an GPIO Pin 14/D5 (hier für Lucky Light: LL-509RGBC2E-006)
@@ -116,6 +118,7 @@ DHT                 dht;
 RtcDS3231<TwoWire>  rtc(Wire);
 BME280I2C           bme;    // Default : forced mode, standby time = 1000 ms
                             // Oversampling = pressure ×1, temperature ×1, humidity ×1, filter off,
+Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified(TSL2561_ADDR_FLOAT, 12345); 
 
 bool rtcExists = false;
 bool bmeExists = false;
@@ -1668,16 +1671,23 @@ void pHStart()
 
 void ePhotostart() // work in progress, no idea how the driver works
 {
-  adc1_config_width(ADC_WIDTH_12Bit);
-  adc1_config_channel_atten(ADC1_CHANNEL_0,ADC_ATTEN_11db); 
-  
+
+  if (tsl.begin() )
+{
+Serial.println("Found Photometer");
+}
+else {
+Serial.println("No Photometer");
+
+}
+/*
   if (adc1_get_raw(ADC1_CHANNEL_0)!=0)
   {
     TSL2561Exists = true;
     Serial.println("Found Photometer");
   }
   photoMeter.initialize();
-
+*/
 }
 
 unsigned long startMillis;
@@ -1721,6 +1731,7 @@ void setup()
     dhtStart();
   }
   pHStart();
+  ePhotostart();
 
   if (bmeExists || dhtExists)
   {
@@ -1737,6 +1748,10 @@ void setup()
   else if (pHExists)
   {
     myType = epH;
+  }
+    else if (TSL2561Exists)
+  {
+    myType = ePhotoMeter;
   }
 
   readSensor();
